@@ -1,0 +1,192 @@
+{
+  "version": "2.0",
+  "savedAt": "2026-01-21T13:43:16.675Z",
+  "global": {
+    "period": 15,
+    "wacc": 10,
+    "utilityTariff": 3.99,
+    "ppaDiscount": 10,
+    "degradation": 0.4,
+    "tariffEscalation": 1.5,
+    "opexInflation": 1
+  },
+  "suppliers": [
+    {
+      "id": 1,
+      "name": "SC power",
+      "enabled": true,
+      "activeTab": 2,
+      "projects": [
+        {
+          "id": 1,
+          "name": "Project 1",
+          "kwp": 573.44,
+          "prodHour": 3.79,
+          "capex": 10860000,
+          "ppaDiscount": 45,
+          "enabled": true,
+          "opex": [
+            {
+              "name": "O&M",
+              "type": "per_kwp",
+              "unit": 30,
+              "freq": 2
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "name": "Project 2",
+          "kwp": 34.6,
+          "prodHour": 3.81,
+          "capex": 700000,
+          "ppaDiscount": 35,
+          "enabled": true,
+          "opex": [
+            {
+              "name": "O&M",
+              "type": "per_kwp",
+              "unit": 30,
+              "freq": 2
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "name": "Project 3",
+          "kwp": 100,
+          "prodHour": 3.65,
+          "capex": 3500000,
+          "ppaDiscount": 10,
+          "enabled": false,
+          "opex": [
+            {
+              "name": "O&M",
+              "type": "per_kwp",
+              "unit": 500,
+              "freq": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ARM",
+      "enabled": true,
+      "activeTab": 2,
+      "projects": [
+        {
+          "id": 1,
+          "name": "Project 1",
+          "kwp": 609.18,
+          "prodHour": 3.72,
+          "capex": 13095000,
+          "ppaDiscount": 45,
+          "enabled": true,
+          "opex": [
+            {
+              "name": "O&M",
+              "type": "per_kwp",
+              "unit": 30,
+              "freq": 2
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "name": "Project 2",
+          "kwp": 31.46,
+          "prodHour": 3.75,
+          "capex": 786500,
+          "ppaDiscount": 35,
+          "enabled": true,
+          "opex": [
+            {
+              "name": "O&M",
+              "type": "per_kwp",
+              "unit": 30,
+              "freq": 2
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "name": "Project 3",
+          "kwp": 100,
+          "prodHour": 3.65,
+          "capex": 3500000,
+          "ppaDiscount": 10,
+          "enabled": false,
+          "opex": [
+            {
+              "name": "O&M",
+              "type": "per_kwp",
+              "unit": 500,
+              "freq": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "SENTIC",
+      "enabled": true,
+      "activeTab": 2,
+      "projects": [
+        {
+          "id": 1,
+          "name": "Project 1",
+          "kwp": 506.88,
+          "prodHour": 3.65,
+          "capex": 9095000,
+          "ppaDiscount": 45,
+          "enabled": true,
+          "opex": [
+            {
+              "name": "O&M",
+              "type": "per_kwp",
+              "unit": 30,
+              "freq": 2
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "name": "Project 2",
+          "kwp": 30.72,
+          "prodHour": 3.65,
+          "capex": 820853,
+          "ppaDiscount": 35,
+          "enabled": true,
+          "opex": [
+            {
+              "name": "O&M",
+              "type": "per_kwp",
+              "unit": 30,
+              "freq": 2
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "name": "Project 3",
+          "kwp": 100,
+          "prodHour": 3.65,
+          "capex": 3500000,
+          "ppaDiscount": 10,
+          "enabled": false,
+          "opex": [
+            {
+              "name": "O&M",
+              "type": "per_kwp",
+              "unit": 500,
+              "freq": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCOE & PPA Solar Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Prompt:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.344.0/lucide.min.js"></script>
+    <script src="config.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="glass-container">
+        <header>
+            <h1>LCOE & PPA Solar Calculator</h1>
+            <p>Investment Analysis Tool for EPC & Investors</p>
+        </header>
+
+        <div id="main-nav" class="tabs no-print">
+            <button class="tab-btn active" onclick="app.switchTab('input-tab', this)">
+                <i data-lucide="edit-3"></i> กรอกข้อมูล (Input)
+            </button>
+            <button class="tab-btn" onclick="app.switchTab('results-tab', this)">
+                <i data-lucide="bar-chart-3"></i> สรุปผล (Report)
+            </button>
+            <button class="tab-btn" onclick="app.switchTab('payback-tab', this)">
+                <i data-lucide="refresh-cw"></i> คืนทุน (Payback)
+            </button>
+            <button class="tab-btn" onclick="app.switchTab('investment-report-tab', this)">
+                <i data-lucide="file-text"></i> Solar Investment Report
+            </button>
+            <div style="margin-left:auto; display:flex; gap:0.5rem; align-items:center;">
+                <button class="btn secondary" onclick="app.exportData()"
+                    style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+                    <i data-lucide="save"></i> Save File
+                </button>
+                <button class="btn secondary" onclick="document.getElementById('import-file').click()"
+                    style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+                    <i data-lucide="upload"></i> Open File
+                </button>
+                <input type="file" id="import-file" style="display:none" onchange="app.importData(this)">
+            </div>
+        </div>
+
+        <main>
+            <div id="input-tab" class="tab-content active">
+                <section id="global-settings" class="card">
+                    <div class="card-header">
+                        <i data-lucide="settings"></i>
+                        <h2>Global Settings (ค่ากำหนดพื้นฐาน)</h2>
+                    </div>
+                    <div class="grid-inputs">
+                        <div class="input-group">
+                            <label>ระยะเวลาสัญญา (ปี)</label>
+                            <input type="number" id="project-period" min="10" max="25">
+                        </div>
+                        <div class="input-group">
+                            <label>WACC / Discount Rate (%)</label>
+                            <input type="number" id="wacc" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Utility Tariff (THB/kWh)</label>
+                            <input type="number" id="utility-tariff" step="0.01">
+                        </div>
+                        <div class="input-group">
+                            <label>Degradation (% / year)</label>
+                            <input type="number" id="degradation" step="0.05">
+                        </div>
+                        <div class="input-group">
+                            <label>Tariff Escalation (% / year)</label>
+                            <input type="number" id="tariff-escalation" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>OPEX Inflation (% / year)</label>
+                            <input type="number" id="opex-inflation" step="0.1">
+                        </div>
+                        <div class="input-group highlight">
+                            <label>PPA Price Year 1 (THB)</label>
+                            <div id="ppa-price-y1-display" class="highlight-val">4.05</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="supplier-section">
+                    <div class="section-header">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h2>Supplier Comparison</h2>
+                            <button class="btn secondary" onclick="app.resetDefaults()" style="font-size:0.8rem;">Reset
+                                Data</button>
+                        </div>
+                        <p>กำหนดข้อมูลทางเทคนิคและค่าดำเนินงานของแต่ละราย (คลิก Active เพื่อเปิด/ปิด)</p>
+                    </div>
+                    <div id="supplier-container" class="supplier-grid"></div>
+                </section>
+            </div>
+
+            <div id="results-tab" class="tab-content">
+                <div class="section-header" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <h2>Solor Investment Report</h2>
+                        <p>รายงานผลการวิเคราะห์ทางการเงินและเปรียบเทียบ Supplier</p>
+                    </div>
+                    <button class="btn primary no-print" onclick="window.print()"><i data-lucide="printer"></i> Print
+                        Report (A4)</button>
+                </div>
+
+                <div class="results-container">
+                    <div class="results-container">
+                        <div class="charts-grid">
+                            <div class="chart-card">
+                                <h3>Levelized Cost & Profit Margin Analysis</h3>
+                                <div class="chart-container" style="height: 500px;"><canvas id="lcoeChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-card">
+                                <h3>Power Generation - Solar Rooftop</h3>
+                                <div class="chart-container" style="height: 500px;"><canvas id="genChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="year-table-section card">
+                            <div class="card-header"><i data-lucide="calendar"></i>
+                                <h2>Yearly Cash Flow Details</h2>
+                            </div>
+                            <div class="selector-group no-print"
+                                style="margin-bottom:1rem; display:flex; gap:1rem; align-items:center;">
+                                <label>เลือกดู Supplier:</label>
+                                <select id="year-table-selector"></select>
+                                <button id="export-csv-btn" class="btn secondary"><i data-lucide="download"></i> Export
+                                    CSV</button>
+                            </div>
+                            <div class="table-responsive glass-table-container">
+                                <table id="year-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Year</th>
+                                            <th>Energy (kWh)</th>
+                                            <th>Tariff (THB)</th>
+                                            <th>Revenue (THB)</th>
+                                            <th>OPEX (THB)</th>
+                                            <th>Net CF (THB)</th>
+                                            <th>Cumulative (M THB)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="investment-report-tab" class="tab-content">
+                <div class="section-header" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <h2>Solar Investment Report</h2>
+                        <p>รายงานผลการวิเคราะห์ทางการเงินและเปรียบเทียบ Supplier</p>
+                    </div>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <button class="btn primary no-print" onclick="window.print()"><i data-lucide="printer"></i>
+                            Print Report</button>
+                    </div>
+                </div>
+
+                <div id="summary-cards-container" class="grid-inputs"
+                    style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                    <!-- Cards injected here -->
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><i data-lucide="table"></i>
+                        <h2>Result Summary</h2>
+                    </div>
+                    <div class="table-responsive glass-table-container">
+                        <table id="summary-table">
+                            <thead>
+                                <tr id="summary-header-row">
+                                    <th>Metric</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="remark-section"
+                    style="margin-top:2rem; padding:1.5rem; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0; font-size:0.9rem; color:#475569;">
+                    <h4 style="font-weight:600; margin-bottom:0.5rem; display:flex; align-items:center;">
+                        <i data-lucide="info" style="width:16px; margin-right:6px;"></i> หมายเหตุการคำนวณ (Environmental
+                        Impact)
+                    </h4>
+                    <ul style="list-style-type:disc; padding-left:1.5rem; margin:0;">
+                        <li style="margin-bottom:0.3rem;">
+                            <b>CO<sub>2</sub> Reduction:</b> คำนวณจากค่า Grid Emission Factor เท่ากับ <b>0.485
+                                kgCO<sub>2</sub>/kWh</b>
+                            <span style="font-size:0.85rem; color:#64748b;">(อ้างอิง: องค์การบริหารจัดการก๊าซเรือนกระจก
+                                - TGO)</span>
+                        </li>
+                        <li>
+                            <b>Equivalent Trees:</b> คำนวณจากการดูดซับคาร์บอนของต้นไม้ยืนต้น ประมาณ <b>9
+                                kgCO<sub>2</sub>/ต้น/ปี</b>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="payback-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>Cumulative Cash Flow Analysis</h2>
+                    <p>แสดงจุดคืนทุน (Breakeven) และกระแสเงินทุนสะสมรายปี</p>
+                </div>
+                <div class="card" id="payback-container" style="padding: 2.5rem;">
+                    <div class="chart-header-row"
+                        style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:1px solid #e2e8f0; padding-bottom:1rem;">
+                        <h3 style="font-size:1.25rem; margin:0;">Cumulative Cash Flow (Payback Years)</h3>
+                        <div class="chart-controls" style="display:flex; gap:10px; align-items:center;">
+                            <label style="font-weight:normal; font-size:0.9rem;">Display Mode:</label>
+                            <select id="payback-mode-selector"
+                                style="padding:4px 8px; border:1px solid #cbd5e1; border-radius:6px;"
+                                onchange="app.renderCharts()">
+                                <option value="overview">Overview (By Supplier)</option>
+                                <option value="breakdown">Project Breakdown</option>
+                            </select>
+                            <button class="btn secondary" style="padding: 4px 12px; font-size: 0.85rem;"
+                                onclick="app.charts.payback.resetZoom()">
+                                <i data-lucide="zoom-out"></i> Reset Zoom
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height: 500px; width:100%;">
+                        <canvas id="paybackChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer>
+            <p>&copy; 2026 P.manid Engineer Version 2</p>
+        </footer>
+    </div>
+
+    <script src="constants.js"></script>
+    <script src="calculator.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
