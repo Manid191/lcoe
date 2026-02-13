@@ -20,3 +20,8 @@ This is a lightweight, single-page application for Solar Power Plant Financial A
 
 ---
 *Version 2.10 (Clean)*
+
+
+## Visual QA (Online)
+For chart UI/export verification in this online-only workflow, use `scripts/visual-regression-checklist.md`.
+No local Playwright installation is required for this checklist.
