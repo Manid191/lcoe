@@ -7,8 +7,6 @@ window.SolarConfig = {
     global: {
         period: 20,
         wacc: 6.0,
-        utilityTariff: 4.5,
-        ppaDiscount: 10.0,
         degradation: 0.5,
         tariffEscalation: 2.0,
         opexInflation: 2.0

@@ -25,7 +25,7 @@ window.Calculator = {
         };
 
         const e1 = project.kwp * project.prodHour * 365;
-        const utilityTariff = Number.isFinite(project.utilityTariff) ? project.utilityTariff : global.utilityTariff;
+        const utilityTariff = Number.isFinite(project.utilityTariff) ? project.utilityTariff : 4.5;
         const sellY1 = utilityTariff * (1 - (project.ppaDiscount / 100));
 
         const r = global.wacc / 100;
